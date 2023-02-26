@@ -1,7 +1,8 @@
 const router = require('express').Router();
-const {saveSong,getAllsongs} = require("../controllers/song");
+const {createSong,getAllsongs,deletesong} = require("../controllers/song");
 
-router.post('/saveSong',saveSong);
-router.get('/getAllSongs',getAllsongs);
+router.post('/',createSong);
+router.get('/',getAllsongs);
+router.delete('/:id',deletesong);
 
 module.exports = router;

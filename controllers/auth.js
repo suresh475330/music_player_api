@@ -98,7 +98,7 @@ const deleteUser = async (req, res) => {
         return res.status(404).json({ msg: `No user with id : ${userId}` })
     }
 
-    res.status(200).send("succes")
+    res.status(200).send("deleted succes")
 }
 
 
