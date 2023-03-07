@@ -1,5 +1,6 @@
 const admin = require("../config/firebase-config");
 const Users = require("../models/users");
+const axios = require("axios");
 
 const admins = {
     email: "suresh475330@gmail.com"
@@ -7,14 +8,20 @@ const admins = {
 
 const createNewUser = async (decodeValue, req, res) => {
 
+    let image = await axios.get(decodeValue.picture, { responseType: 'arraybuffer' });
+    let returnedB64 = Buffer.from(image.data).toString('base64');
+
+
     const newUser = new Users({
         name: decodeValue.name,
         email: decodeValue.email,
-        imageURL: decodeValue.picture,
+        imageURL: `data:image/png;base64,${returnedB64}`,
+        // imageURL: decodeValue.picture,
         email_verfied: decodeValue.email_verified,
         role: decodeValue.email === admins.email ? "admin" : "member",
         auth_time: decodeValue.auth_time,
     });
+
     try {
         const savedUser = await newUser.save();
         res.status(200).send({ user: savedUser });
@@ -26,7 +33,7 @@ const createNewUser = async (decodeValue, req, res) => {
 
 const updateUser = async (decodeValue, req, res) => {
 
-    const filter = { email : decodeValue.email };
+    const filter = { email: decodeValue.email };
     const update = { auth_time: decodeValue.auth_time };
     const options = { new: true };
 
@@ -58,7 +65,7 @@ const login = async (req, res) => {
         }
 
         // Check the user is already exists or not in mongodb
-        const userExists = await Users.findOne({ email : decodeValue.email });
+        const userExists = await Users.findOne({ email: decodeValue.email });
 
         if (!userExists) {
             console.log("create new user");
@@ -72,7 +79,7 @@ const login = async (req, res) => {
 
 
     } catch (error) {
-        return res.status(404).json({ msg: error });
+        res.status(404).json({ msg: error });
     }
 }
 
@@ -81,26 +88,27 @@ const getAllUser = async (req, res) => {
 
     try {
         const users = await Users.find();
-        return res.status(200).json(users);
+        res.status(200).json(users);
     } catch (error) {
-        return res.status(404).json({ msg: error });
+        res.status(404).json({ msg: error });
     }
 
 }
 
 
 const deleteUser = async (req, res) => {
-    const { id : userId } = req.params;
+    const { id: userId } = req.params;
 
-    const user = await Users.findByIdAndRemove({ _id: userId,})
+    const user = await Users.findByIdAndRemove({ _id: userId, })
 
     if (!user) {
         return res.status(404).json({ msg: `No user with id : ${userId}` })
     }
 
-    res.status(200).send("deleted succes")
+    res.status(200).json({msg : `${user.name} deleted succes`});
+
 }
 
 
 
-module.exports = { login, getAllUser,deleteUser };
+module.exports = { login, getAllUser, deleteUser };
