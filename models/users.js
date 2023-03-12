@@ -19,12 +19,6 @@ const UserSchema = new mongoose.Schema(
             required: true,
         },
 
-        favourites: [
-            {
-                songId: String,
-            },
-        ],
-
         role: {
             type: String,
             required: true,

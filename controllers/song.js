@@ -51,6 +51,7 @@ const getRandomSongs = async (req, res) => {
         }
 
         const randomSongs = await Song.aggregate([{ $sample: { size: Number(length) } }])
+        await Song.populate(randomSongs, { path: "artist", select: { "name": 1, "imageUrl": 1, "_id": 0 } });
         res.status(200).json({ randomSongs });
     } catch (error) {
         res.status(404).json({ msg: error.message });
@@ -95,7 +96,7 @@ const getAllsongs = async (req, res) => {
         result = result.skip(skip).limit(limit)
         const songs = await result.populate("artist", "name imageUrl -_id").populate("album", "title imageUrl -_id");
 
-        if(artistId || albumId){
+        if (artistId || albumId) {
             return res.status(200).json(songs);
         }
         const songslength = await Song.estimatedDocumentCount();
@@ -120,9 +121,23 @@ const deletesong = async (req, res) => {
 
 }
 
+const getSongById = async (req, res) => {
+    const { id: songId } = req.params;
+
+    try {
+        const song = await Song.findOne({ _id: songId });
+        res.status(200).json(song);
+    } catch (error) {
+
+        res.status(404).json({ msg: error.message });
+    }
+
+
+}
+
 
 module.exports = {
     createSong, getAllsongs,
     deletesong, getSearchSongs,
-    getRandomSongs
+    getRandomSongs,getSongById
 };

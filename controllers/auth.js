@@ -1,5 +1,6 @@
 const admin = require("../config/firebase-config");
 const Users = require("../models/users");
+const Favourite = require("../models/favourite");
 const axios = require("axios");
 
 const admins = {
@@ -24,6 +25,9 @@ const createNewUser = async (decodeValue, req, res) => {
 
     try {
         const savedUser = await newUser.save();
+
+        await Favourite.create({ user: savedUser._id })
+
         res.status(200).send({ user: savedUser });
     } catch (err) {
         res.status(400).send({ msg: err });
@@ -68,11 +72,11 @@ const login = async (req, res) => {
         const userExists = await Users.findOne({ email: decodeValue.email });
 
         if (!userExists) {
-            console.log("create new user");
+            // console.log("create new user");
             // If user in not there create new user
             createNewUser(decodeValue, req, res);
         } else {
-            console.log("update user");
+            // console.log("update user");
             // If user already in there update user
             updateUser(decodeValue, req, res);
         }
@@ -99,13 +103,15 @@ const getAllUser = async (req, res) => {
 const deleteUser = async (req, res) => {
     const { id: userId } = req.params;
 
+    await Favourite.findOneAndDelete({ user: userId })
+
     const user = await Users.findByIdAndRemove({ _id: userId, })
 
     if (!user) {
         return res.status(404).json({ msg: `No user with id : ${userId}` })
     }
 
-    res.status(200).json({msg : `${user.name} deleted succes`});
+    res.status(200).json({ msg: `${user.name} deleted succes` });
 
 }
 

@@ -6,5 +6,4 @@ router.get("/login",login);
 router.get("/getAllUsers",getAllUser);
 router.delete("/deleteUser/:id",deleteUser);
 
-
 module.exports = router;
