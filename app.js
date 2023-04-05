@@ -5,8 +5,8 @@ require("dotenv").config();
 
 
 // extra security packages
-const helmet = require("helmet"); 
 const cors = require("cors");
+const helmet = require("helmet"); 
 const xss = require("xss-clean"); 
 const rateLimit = require("express-rate-limit"); 
 
@@ -45,7 +45,7 @@ app.use('/api/v1/album',albumRouter);
 app.use('/api/v1/favourite',favouriteRouter);
 
 app.get("*", (req, res) => {
-    res.status(404).send("No route is there!");
+    res.status(404).send("<h1>No route is there!</h1>");
 })
 
 const port = process.env.PORT || 5000;

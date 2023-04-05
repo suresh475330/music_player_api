@@ -1,7 +1,7 @@
 
 const admin = require("firebase-admin");
 
-const serviceAccount = require("./ServiceAccount.json");
+const serviceAccount = require(process.env.FIREBASE_SERVICE_ACCOUNT_KEY_PATH);
 
 admin.initializeApp({
 
